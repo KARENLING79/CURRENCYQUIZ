@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Southeast Asian Currencies Quiz & Teacher Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
+                        },
+                        classroom: '#0f9d58'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500 text-slate-900 flex items-center justify-center text-xl font-bold shadow-md">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg sm:text-xl tracking-tight">SE Asian Currencies Quiz</h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Google Classroom Interactive Assignment</p>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <div class="flex items-center space-x-2 bg-slate-800 p-1 rounded-xl border border-slate-700">
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 bg-emerald-500 text-slate-950 shadow">
+                    <i class="fa-solid fa-pen-to-square mr-1"></i> Quiz
+                </button>
+                <button onclick="switchTab('study')" id="tab-study" class="px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-300 rounded-lg hover:text-white transition-all duration-200">
+                    <i class="fa-solid fa-book-open mr-1"></i> Study Cards
+                </button>
+                <button onclick="switchTab('teacher')" id="tab-teacher" class="px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-300 rounded-lg hover:text-white transition-all duration-200">
+                    <i class="fa-solid fa-chart-line mr-1"></i> Teacher Portal
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: STUDENT ENTRY & QUIZ SECTION      -->
+        <!-- ========================================== -->
+        <section id="view-quiz" class="space-y-6">
+            
+            <!-- Step 1: Student Name Registration Card -->
+            <div id="student-login-card" class="max-w-lg mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-200">
+                <div class="text-center mb-6">
+                    <span class="inline-block p-3 bg-emerald-100 text-emerald-700 rounded-2xl mb-3">
+                        <i class="fa-solid fa-graduation-cap text-3xl"></i>
+                    </span>
+                    <h2 class="text-2xl font-bold text-slate-900">Welcome to the Quiz!</h2>
+                    <p class="text-slate-500 text-sm mt-1">Match Southeast Asian countries with their correct national currencies.</p>
+                </div>
+
+                <form id="student-form" onsubmit="startQuiz(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="input-student-name" required placeholder="e.g. Sarah Tan" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-slate-800 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Class / Student ID (Optional)</label>
+                        <input type="text" id="input-student-class" placeholder="e.g. Grade 8 - Section A" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-slate-800 transition">
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-800 text-xs flex items-start space-x-2">
+                        <i class="fa-solid fa-circle-info mt-0.5 text-amber-600"></i>
+                        <span>Your score will be automatically saved and sent to your teacher's dashboard once completed.</span>
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center space-x-2">
+                        <span>Begin Quiz Now</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Step 2: Interactive Quiz Box (Hidden by default) -->
+            <div id="quiz-box" class="hidden max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+                <!-- Quiz Header Progress Bar -->
+                <div class="bg-slate-900 text-white p-4 sm:p-6">
+                    <div class="flex justify-between items-center text-xs font-semibold text-slate-400 mb-2">
+                        <span id="quiz-student-badge" class="bg-slate-800 text-emerald-400 px-3 py-1 rounded-full border border-slate-700">Student: --</span>
+                        <span id="question-tracker">Question 1 of 10</span>
+                    </div>
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                        <div id="progress-bar-fill" class="bg-emerald-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Question Area -->
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="min-h-[90px]">
+                        <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-md uppercase tracking-wide">Currency Question</span>
+                        <h3 id="question-text" class="text-xl sm:text-2xl font-bold text-slate-900 mt-2 leading-snug">
+                            Loading Question...
+                        </h3>
+                    </div>
+
+                    <!-- Multiple Choice Options Grid -->
+                    <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <!-- Options generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Footer Bar -->
+                <div class="bg-slate-50 border-t border-slate-100 p-4 sm:px-8 flex justify-between items-center text-xs text-slate-500">
+                    <span id="current-score-preview"><i class="fa-solid fa-star text-amber-400 mr-1"></i> Continuous Quiz Assessment</span>
+                    <button onclick="quitQuiz()" class="text-slate-400 hover:text-red-500 transition">Quit Quiz</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Quiz Score Results View (Hidden by default) -->
+            <div id="results-box" class="hidden max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-200 text-center space-y-6">
+                <div class="inline-block p-4 bg-emerald-100 text-emerald-600 rounded-full">
+                    <i class="fa-solid fa-trophy text-4xl"></i>
+                </div>
+                
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Quiz Completed!</h2>
+                    <p class="text-slate-500 text-sm mt-1">Great job finishing your currency test.</p>
+                </div>
+
+                <!-- Final Score Circle/Pill -->
+                <div class="bg-slate-900 text-white rounded-2xl p-6 max-w-sm mx-auto shadow-inner space-y-2">
+                    <p class="text-xs uppercase tracking-widest text-slate-400 font-bold">Your Official Score</p>
+                    <div class="text-4xl sm:text-5xl font-black text-emerald-400" id="final-score-percentage">100%</div>
+                    <p class="text-sm font-medium text-slate-300" id="final-score-raw">10 out of 10 Correct</p>
+                </div>
+
+                <!-- Cloud Submission Status Indicator -->
+                <div id="submission-status" class="inline-flex items-center space-x-2 text-sm text-emerald-700 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <span>Submitting score to teacher...</span>
+                </div>
+
+                <!-- Detailed Breakdown Toggle -->
+                <div class="text-left pt-4 border-t border-slate-100">
+                    <h4 class="font-bold text-slate-800 text-sm mb-3">Answers Summary:</h4>
+                    <div id="answer-review-list" class="space-y-2 max-h-60 overflow-y-auto pr-2">
+                        <!-- Review items generated dynamically -->
+                    </div>
+                </div>
+
+                <div class="pt-4 flex flex-col sm:flex-row gap-3">
+                    <button onclick="resetToLogin()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition shadow">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> Retake Quiz
+                    </button>
+                    <button onclick="switchTab('study')" class="flex-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold py-3 px-4 rounded-xl transition">
+                        <i class="fa-solid fa-book-open mr-2"></i> Review Flashcards
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: STUDY FLASHCARDS MODE              -->
+        <!-- ========================================== -->
+        <section id="view-study" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-md border border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">Southeast Asia Currency Reference Guide</h2>
+                    <p class="text-slate-500 text-sm">Study these 8 target country & currency pairings before taking the quiz.</p>
+                </div>
+                <button onclick="switchTab('quiz')" class="bg-emerald-600 text-white font-bold px-4 py-2.5 rounded-xl hover:bg-emerald-700 shadow text-sm">
+                    Ready to Quiz? <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+
+            <!-- Flashcard Grid -->
+            <div id="flashcards-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Flashcards rendered by JS -->
+            </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: TEACHER / ADMIN DASHBOARD         -->
+        <!-- ========================================== -->
+        <section id="view-teacher" class="hidden space-y-6">
+            
+            <!-- Classroom Share & Management Panel -->
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <span class="bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/30">
+                            Teacher Dashboard
+                        </span>
+                        <h2 class="text-2xl font-bold mt-1">Student Score Center</h2>
+                        <p class="text-slate-400 text-sm">Real-time student submissions & Google Classroom assignment integration.</p>
+                    </div>
+
+                    <!-- Quick Action Buttons -->
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="shareToGoogleClassroom()" class="bg-[#0f9d58] hover:bg-[#0b8043] text-white font-bold px-4 py-2.5 rounded-xl shadow transition text-xs sm:text-sm flex items-center space-x-2">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                            <span>Share on Google Classroom</span>
+                        </button>
+
+                        <button onclick="copyAssignmentLink()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2.5 rounded-xl shadow transition text-xs sm:text-sm flex items-center space-x-2">
+                            <i class="fa-solid fa-link"></i>
+                            <span>Copy Link</span>
+                        </button>
+
+                        <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-xl shadow transition text-xs sm:text-sm flex items-center space-x-2">
+                            <i class="fa-solid fa-file-csv"></i>
+                            <span>Export CSV</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Class Statistics Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Total Submissions</p>
+                    <h3 id="stat-total-submissions" class="text-3xl font-black text-slate-900 mt-1">0</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Average Score</p>
+                    <h3 id="stat-average-score" class="text-3xl font-black text-emerald-600 mt-1">0%</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Highest Score</p>
+                    <h3 id="stat-highest-score" class="text-3xl font-black text-amber-500 mt-1">--</h3>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Pass Rate (&ge;70%)</p>
+                    <h3 id="stat-pass-rate" class="text-3xl font-black text-blue-600 mt-1">0%</h3>
+                </div>
+            </div>
+
+            <!-- Student Results Table Card -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                <div class="p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                    <h3 class="font-bold text-slate-900 text-lg">Student Roster & Quiz Marks</h3>
+                    
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
+                        <input type="text" id="teacher-search" oninput="filterTeacherTable()" placeholder="Search student name..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <!-- Roster Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs uppercase font-bold tracking-wider border-b border-slate-200">
+                                <th class="p-4">Student Name</th>
+                                <th class="p-4">Class / Section</th>
+                                <th class="p-4 text-center">Score</th>
+                                <th class="p-4 text-center">Percentage</th>
+                                <th class="p-4">Submitted At</th>
+                                <th class="p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-table-body" class="divide-y divide-slate-100 text-sm text-slate-700">
+                            <tr>
+                                <td colspan="6" class="p-8 text-center text-slate-400">
+                                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-slate-300"></i>
+                                    <p>Loading student scores from cloud database...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Custom Toast / Alert Notification Box -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- Student Detail Modal -->
+    <div id="detail-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-900 text-lg" id="modal-student-name">Student Detail</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="modal-content" class="space-y-3 max-h-80 overflow-y-auto text-sm">
+                <!-- Modal details -->
+            </div>
+            <button onclick="closeModal()" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl">Close</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 border-t border-slate-800 text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>Southeast Asian Currencies Practice Quiz &bull; Formatted for Google Classroom</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK Modules -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration setup using environment injected variables or fallback
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'se-asia-currency-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "demo-key",
+                authDomain: "demo.firebaseapp.com",
+                projectId: "demo-project",
+                storageBucket: "demo.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123456789:web:demo"
+            };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        // Initialize Authentication (Mandatory Rule 3)
+        async function initAppAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const userCred = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = userCred.user;
+                } else {
+                    const userCred = await signInAnonymously(auth);
+                    currentUser = userCred.user;
+                }
+                console.log("Authenticated as user:", currentUser.uid);
+                listenToStudentScores();
+            } catch (err) {
+                console.error("Firebase auth error:", err);
+            }
+        }
+
+        // Collection path following mandatory Rule 1
+        function getScoresCollection() {
+            return collection(db, 'artifacts', appId, 'public', 'data', 'student_scores');
+        }
+
+        // Submit Score function exposed globally for quiz logic
+        window.saveStudentScoreToCloud = async function(scoreData) {
+            if (!currentUser) {
+                console.warn("User not authenticated yet.");
+                showToast("Auth initializing, retrying save...", "warning");
+                await initAppAuth();
+            }
+
+            try {
+                const docRef = await addDoc(getScoresCollection(), {
+                    ...scoreData,
+                    userId: currentUser ? currentUser.uid : 'anonymous',
+                    timestamp: serverTimestamp(),
+                    dateFormatted: new Date().toLocaleString()
+                });
+                console.log("Score saved with ID:", docRef.id);
+                return true;
+            } catch (error) {
+                console.error("Error saving score to Firestore:", error);
+                return false;
+            }
+        };
+
+        // Realtime sync of student scores for Teacher Dashboard
+        let allScoresCache = [];
+        function listenToStudentScores() {
+            try {
+                // Simple collection query without complex filters (Mandatory Rule 2)
+                const scoresQuery = getScoresCollection();
+                
+                onSnapshot(scoresQuery, (snapshot) => {
+                    allScoresCache = [];
+                    snapshot.forEach((doc) => {
+                        allScoresCache.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Sort in JS memory (Rule 2 requirement)
+                    allScoresCache.sort((a, b) => {
+                        const timeA = a.timestamp?.seconds || 0;
+                        const timeB = b.timestamp?.seconds || 0;
+                        return timeB - timeA;
+                    });
+
+                    window.allStudentScores = allScoresCache;
+                    if (typeof window.renderTeacherDashboard === 'function') {
+                        window.renderTeacherDashboard(allScoresCache);
+                    }
+                }, (error) => {
+                    console.error("Firestore onSnapshot error:", error);
+                    // Render fallback empty list if firebase offline
+                    if (typeof window.renderTeacherDashboard === 'function') {
+                        window.renderTeacherDashboard([]);
+                    }
+                });
+            } catch (e) {
+                console.error("Failed to setup snapshot listener:", e);
+            }
+        }
+
+        // Kick off Auth on load
+        window.addEventListener('DOMContentLoaded', initAppAuth);
+    </script>
+
+    <!-- App Logic Script -->
+    <script>
+        
+        // Target dataset based on user prompt
+        const CURRENCY_DATA = [
+            { country: "Myanmar", currency: "Kyat", flag: "🇲🇲" },
+            { country: "Singapore", currency: "Dollar", flag: "🇸🇬" },
+            { country: "Brunei", currency: "Dollar", flag: "🇧🇳" },
+            { country: "Thailand", currency: "Baht", flag: "🇹🇭" },
+            { country: "Indonesia", currency: "Rupiah", flag: "🇮🇩" },
+            { country: "Philippines", currency: "Peso", flag: "🇵🇭" },
+            { country: "Laos", currency: "Kip", flag: "🇱🇦" },
+            { country: "Vietnam", currency: "Dong", flag: "🇻🇳" }
+        ];
+
+        // State variables
+        let currentStudent = { name: "", classCode: "" };
+        let activeQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let scoreCount = 0;
+
+        // On Load initialization
+        window.onload = function() {
+            renderStudyCards();
+        };
+
+        // Tab Navigation
+        function switchTab(tabName) {
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-study').classList.add('hidden');
+            document.getElementById('view-teacher').classList.add('hidden');
+
+            document.getElementById('tab-quiz').className = "px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-300 rounded-lg hover:text-white transition-all duration-200";
+            document.getElementById('tab-study').className = "px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-300 rounded-lg hover:text-white transition-all duration-200";
+            document.getElementById('tab-teacher').className = "px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-300 rounded-lg hover:text-white transition-all duration-200";
+
+            if (tabName === 'quiz') {
+                document.getElementById('view-quiz').classList.remove('hidden');
+                document.getElementById('tab-quiz').className = "px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-500 text-slate-950 shadow";
+            } else if (tabName === 'study') {
+                document.getElementById('view-study').classList.remove('hidden');
+                document.getElementById('tab-study').className = "px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-500 text-slate-950 shadow";
+            } else if (tabName === 'teacher') {
+                document.getElementById('view-teacher').classList.remove('hidden');
+                document.getElementById('tab-teacher').className = "px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg bg-emerald-500 text-slate-950 shadow";
+                if (window.allStudentScores) {
+                    window.renderTeacherDashboard(window.allStudentScores);
+                }
+            }
+        }
+
+        
+        // Generate a 10-question randomized test from dataset
+        function generateQuestions() {
+            const questions = [
+                { type: 'country_to_curr', country: "Myanmar", correct: "Kyat", prompt: "What is the official currency of Myanmar?" },
+                { type: 'curr_to_country', currency: "Kip", correct: "Laos", prompt: "Which Southeast Asian nation uses the Kip as its official currency?" },
+                { type: 'country_to_curr', country: "Thailand", correct: "Baht", prompt: "What is the official currency of Thailand?" },
+                { type: 'country_to_curr', country: "Vietnam", correct: "Dong", prompt: "Which official currency is used in Vietnam?" },
+                { type: 'country_to_curr', country: "Philippines", correct: "Peso", prompt: "What is the official unit of currency in the Philippines?" },
+                { type: 'multi_country', currency: "Dollar", correct: "Dollar", prompt: "Which unit of currency is officially used by both Singapore and Brunei?" },
+                { type: 'country_to_curr', country: "Indonesia", correct: "Rupiah", prompt: "What is the official currency of Indonesia?" },
+                { type: 'travel_scenario', currency: "Kip", country: "Laos", correct: "Kip", prompt: "If you are exchanging money to spend in Laos, which currency will you receive?" },
+                { type: 'curr_to_country', currency: "Kyat", correct: "Myanmar", prompt: "Which nation uses the Kyat as its official national currency?" },
+                { type: 'curr_to_country', currency: "Peso", correct: "Philippines", prompt: "Which Southeast Asian country's official currency is the Peso?" }
+            ];
+
+            const allCountries = ["Myanmar", "Singapore", "Brunei", "Thailand", "Indonesia", "Philippines", "Laos", "Vietnam"];
+            const allCurrencies = ["Kyat", "Dollar", "Baht", "Rupiah", "Peso", "Kip", "Dong"];
+
+            // Shuffle option choices for each question matching target answer type
+            return questions.map(q => {
+                const optionsPool = allCurrencies.includes(q.correct) ? allCurrencies : allCountries;
+                
+                // Ensure correct answer is included and 3 distinct incorrect distractors selected
+                let filtered = optionsPool.filter(o => o !== q.correct);
+                filtered = filtered.sort(() => 0.5 - Math.random()).slice(0, 3);
+                filtered.push(q.correct);
+                filtered.sort(() => 0.5 - Math.random());
+
+                return { ...q, options: filtered };
+            });
+        }
+
+        // Start Quiz Handler
+        function startQuiz(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('input-student-name').value.trim();
+            const classInput = document.getElementById('input-student-class').value.trim();
+
+            if (!nameInput) {
+                showToast("Please enter your name first.", "error");
+                return;
+            }
+
+            currentStudent = { name: nameInput, classCode: classInput || "General Class" };
+            document.getElementById('quiz-student-badge').innerText = `Student: ${currentStudent.name}`;
+
+            activeQuestions = generateQuestions();
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            scoreCount = 0;
+
+            document.getElementById('student-login-card').classList.add('hidden');
+            document.getElementById('results-box').classList.add('hidden');
+            document.getElementById('quiz-box').classList.remove('hidden');
+
+            renderCurrentQuestion();
+        }
+
+        // Render Question UI
+        function renderCurrentQuestion() {
+            const q = activeQuestions[currentQuestionIndex];
+            
+            // Progress Bar
+            const percent = ((currentQuestionIndex) / activeQuestions.length) * 100;
+            document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+            document.getElementById('question-tracker').innerText = `Question ${currentQuestionIndex + 1} of ${activeQuestions.length}`;
+
+            // Question Text
+            document.getElementById('question-text').innerText = q.prompt;
+
+            // Options
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            q.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 text-left font-semibold text-slate-800 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-500 border-2 border-slate-200 rounded-xl transition duration-150 flex items-center justify-between group shadow-sm";
+                btn.onclick = () => selectOption(opt);
+                btn.innerHTML = `
+                    <span>${opt}</span>
+                    <i class="fa-regular fa-circle text-slate-300 group-hover:text-emerald-500"></i>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        // Option Selection Handler
+        function selectOption(selectedOpt) {
+            const q = activeQuestions[currentQuestionIndex];
+            const isCorrect = (selectedOpt === q.correct);
+
+            if (isCorrect) scoreCount++;
+
+            userAnswers.push({
+                question: q.prompt,
+                correctAnswer: q.correct,
+                userAnswer: selectedOpt,
+                userIsCorrect: isCorrect
+            });
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < activeQuestions.length) {
+                renderCurrentQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function quitQuiz() {
+            if (confirm("Are you sure you want to quit? Progress will be lost.")) {
+                resetToLogin();
+            }
+        }
+
+        function resetToLogin() {
+            document.getElementById('quiz-box').classList.add('hidden');
+            document.getElementById('results-box').classList.add('hidden');
+            document.getElementById('student-login-card').classList.remove('hidden');
+        }
+
+        
+        // Finish Quiz & Submit
+        async function finishQuiz() {
+            document.getElementById('quiz-box').classList.add('hidden');
+            document.getElementById('results-box').classList.remove('hidden');
+
+            const scorePercent = Math.round((scoreCount / activeQuestions.length) * 100);
+            document.getElementById('final-score-percentage').innerText = `${scorePercent}%`;
+            document.getElementById('final-score-raw').innerText = `${scoreCount} out of ${activeQuestions.length} Correct`;
+
+            // Trigger Confetti for high scores
+            if (scorePercent >= 80 && typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            // Render Review List
+            const reviewContainer = document.getElementById('answer-review-list');
+            reviewContainer.innerHTML = '';
+            userAnswers.forEach((ans, idx) => {
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-xl text-xs flex items-start justify-between border ${ans.userIsCorrect ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-red-50 border-red-200 text-red-900'}`;
+                div.innerHTML = `
+                    <div>
+                        <p class="font-bold">${idx + 1}. ${ans.question}</p>
+                        <p class="mt-0.5">Your answer: <span class="underline">${ans.userAnswer}</span> ${ans.userIsCorrect ? '' : `(Correct: ${ans.correctAnswer})`}</p>
+                    </div>
+                    <i class="fa-solid ${ans.userIsCorrect ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-red-500'} text-base mt-0.5"></i>
+                `;
+                reviewContainer.appendChild(div);
+            });
+
+            // Save payload to Firestore
+            const submissionPayload = {
+                studentName: currentStudent.name,
+                classCode: currentStudent.classCode,
+                score: scoreCount,
+                totalQuestions: activeQuestions.length,
+                percentage: scorePercent,
+                answeredQuestions: userAnswers
+            };
+
+            const statusEl = document.getElementById('submission-status');
+            statusEl.className = "inline-flex items-center space-x-2 text-sm text-slate-600 bg-slate-100 px-4 py-2 rounded-xl";
+            statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Saving score to teacher dashboard...</span>`;
+
+            if (window.saveStudentScoreToCloud) {
+                const success = await window.saveStudentScoreToCloud(submissionPayload);
+                if (success) {
+                    statusEl.className = "inline-flex items-center space-x-2 text-sm text-emerald-700 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200";
+                    statusEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-emerald-600"></i> <span class="font-semibold">Score submitted successfully to teacher!</span>`;
+                } else {
+                    statusEl.className = "inline-flex items-center space-x-2 text-sm text-amber-800 bg-amber-50 px-4 py-2 rounded-xl border border-amber-200";
+                    statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i> <span>Saved locally. Teacher can refresh portal.</span>`;
+                }
+            }
+        }
+
+        // Render Flashcards for Study View
+        function renderStudyCards() {
+            const container = document.getElementById('flashcards-grid');
+            container.innerHTML = '';
+            CURRENCY_DATA.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition text-center space-y-2";
+                card.innerHTML = `
+                    <div class="text-4xl">${item.flag}</div>
+                    <h3 class="font-extrabold text-slate-900 text-lg">${item.country}</h3>
+                    <div class="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 font-bold rounded-lg text-xs uppercase tracking-wider">
+                        ${item.currency}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        
+        // Render Teacher Dashboard Roster
+        window.renderTeacherDashboard = function(scoresList) {
+            const tbody = document.getElementById('student-table-body');
+            tbody.innerHTML = '';
+
+            // Compute summary stats
+            const total = scoresList.length;
+            document.getElementById('stat-total-submissions').innerText = total;
+
+            if (total === 0) {
+                document.getElementById('stat-average-score').innerText = '0%';
+                document.getElementById('stat-highest-score').innerText = '--';
+                document.getElementById('stat-pass-rate').innerText = '0%';
+
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-8 text-center text-slate-400">
+                            <i class="fa-solid fa-inbox text-3xl mb-2 text-slate-300"></i>
+                            <p>No student submissions yet. Share the quiz link with your students!</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let sumPercent = 0;
+            let maxScore = 0;
+            let passCount = 0;
+
+            scoresList.forEach(item => {
+                const pct = item.percentage || 0;
+                sumPercent += pct;
+                if (pct > maxScore) maxScore = pct;
+                if (pct >= 70) passCount++;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-slate-900">${escapeHtml(item.studentName || 'Anonymous')}</td>
+                    <td class="p-4 text-slate-500">${escapeHtml(item.classCode || 'N/A')}</td>
+                    <td class="p-4 text-center font-semibold text-slate-800">${item.score} / ${item.totalQuestions || 10}</td>
+                    <td class="p-4 text-center">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${pct >= 70 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
+                            ${pct}%
+                        </span>
+                    </td>
+                    <td class="p-4 text-slate-400 text-xs">${item.dateFormatted || 'Recently'}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="viewStudentDetail('${item.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg transition">
+                            <i class="fa-solid fa-eye mr-1"></i> Review
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('stat-average-score').innerText = `${Math.round(sumPercent / total)}%`;
+            document.getElementById('stat-highest-score').innerText = `${maxScore}%`;
+            document.getElementById('stat-pass-rate').innerText = `${Math.round((passCount / total) * 100)}%`;
+        };
+
+        // Filter Teacher Roster by Name
+        function filterTeacherTable() {
+            const query = document.getElementById('teacher-search').value.toLowerCase();
+            const allData = window.allStudentScores || [];
+            const filtered = allData.filter(item => 
+                (item.studentName && item.studentName.toLowerCase().includes(query)) ||
+                (item.classCode && item.classCode.toLowerCase().includes(query))
+            );
+            window.renderTeacherDashboard(filtered);
+        }
+
+        // View Detailed Modal
+        function viewStudentDetail(scoreId) {
+            const allData = window.allStudentScores || [];
+            const item = allData.find(s => s.id === scoreId);
+            if (!item) return;
+
+            document.getElementById('modal-student-name').innerText = `${item.studentName} (${item.percentage}%)`;
+            
+            const content = document.getElementById('modal-content');
+            content.innerHTML = `
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                    <p><span class="font-bold">Class / ID:</span> ${escapeHtml(item.classCode || 'N/A')}</p>
+                    <p><span class="font-bold">Date Submitted:</span> ${item.dateFormatted || 'N/A'}</p>
+                    <p><span class="font-bold">Final Mark:</span> ${item.score} / ${item.totalQuestions || 10}</p>
+                </div>
+                <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider mt-3">Submitted Answers:</h4>
+            `;
+
+            if (item.answeredQuestions && Array.isArray(item.answeredQuestions)) {
+                item.answeredQuestions.forEach((q, idx) => {
+                    const row = document.createElement('div');
+                    row.className = `p-2.5 rounded-lg text-xs ${q.userIsCorrect ? 'bg-emerald-50 text-emerald-900' : 'bg-red-50 text-red-900'} border`;
+                    row.innerHTML = `
+                        <p class="font-bold">${idx + 1}. ${escapeHtml(q.question)}</p>
+                        <p class="mt-0.5">Answered: ${escapeHtml(q.userAnswer)} ${q.userIsCorrect ? '✓' : `(Correct: ${escapeHtml(q.correctAnswer)})`}</p>
+                    `;
+                    content.appendChild(row);
+                });
+            }
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        // Share to Google Classroom Widget Integration
+        function shareToGoogleClassroom() {
+            const currentUrl = window.location.href;
+            const classroomShareUrl = `https://classroom.google.com/share?url=${encodeURIComponent(currentUrl)}`;
+            window.open(classroomShareUrl, '_blank', 'width=600,height=500');
+            showToast("Opening Google Classroom Share window...", "info");
+        }
+
+        // Copy Link for Assignment
+        function copyAssignmentLink() {
+            const textToCopy = window.location.href;
+            const dummy = document.createElement("input");
+            document.body.appendChild(dummy);
+            dummy.value = textToCopy;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            showToast("Quiz Link copied! Paste into Google Classroom.", "success");
+        }
+
+        // Export Scores Roster to CSV File
+        function exportToCSV() {
+            const data = window.allStudentScores || [];
+            if (data.length === 0) {
+                showToast("No student scores available to export.", "warning");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,Student Name,Class/ID,Score,Total,Percentage,Submitted Date\n";
+            data.forEach(row => {
+                const name = `"${(row.studentName || '').replace(/"/g, '""')}"`;
+                const cls = `"${(row.classCode || '').replace(/"/g, '""')}"`;
+                const score = row.score || 0;
+                const total = row.totalQuestions || 10;
+                const pct = row.percentage || 0;
+                const date = `"${(row.dateFormatted || '').replace(/"/g, '""')}"`;
+                csvContent += `${name},${cls},${score},${total},${pct}%,${date}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `SE_Asia_Currency_Quiz_Scores_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast("CSV Gradebook downloaded successfully!", "success");
+        }
+
+        // Toast Helpers
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bg = 'bg-slate-900 text-white';
+            if (type === 'success') bg = 'bg-emerald-600 text-white';
+            if (type === 'error') bg = 'bg-red-600 text-white';
+            if (type === 'warning') bg = 'bg-amber-600 text-white';
+
+            toast.className = `${bg} px-4 py-3 rounded-xl shadow-lg text-xs font-bold flex items-center space-x-2 pointer-events-auto transition-all duration-300 transform translate-y-2`;
+            toast.innerHTML = `
+                <i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
